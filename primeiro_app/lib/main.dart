@@ -1,24 +1,53 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import './questao.dart';
+import './resposta.dart';
 
 main() => runApp(new PerguntaApp());
 
-class PerguntaAppState extends State<PerguntaApp>{
-  var perguntaSelecionada =0;
+class _PerguntaAppState extends State<PerguntaApp>{
+  var _perguntaSelecionada =0;
 
-  void responder(){
+  void _responder(){
     setState(() {
-    perguntaSelecionada++;
+    _perguntaSelecionada++;
     });
-    print(perguntaSelecionada);
+    print(_perguntaSelecionada);
   }
 
-  final perguntas=[
-    'Qual é o sua cor favorita?',
-    'Qual é o seu animal favorito?'
+  ///String e objeto porque a resposta vai ser uma lista de respostas
+  //final List <Map<String,Object>>perguntas=[
+    final perguntas =[ //Usando inferencia - Os dois métodos funcionam
+    {
+      'texto':'Qual é o sua cor favorita?',
+      'respostas':['Preto','vermelho','Verde','Branco'],
+    },
+    {
+      'texto':'Qual é o seu animal favorito?',
+      'respostas':['Coelho','Cobra','Elefante','Leão'],
+    },
+    {
+      'texto':'Qual é o seu instrutor favorito??',
+      'respostas':['Maria','João','Léo','Pedro'],
+    }
   ];
+
   Widget build(BuildContext context){
+
+    List<String> respostas = perguntas[_perguntaSelecionada].cast()['respostas'];
+
+    //Código Imperativo
+      /*
+      for(var textoResp in perguntas[_perguntaSelecionada].cast()['respostas']){
+        respostas.add(Resposta(textoResp, _responder));
+      }*/
+
+    //Código declarativo
+      ///Pode usar o maps para transformar uma lista de um tipo
+      /// em uma lista de outro tipo
+      // List<Widget> widgets =respostas.map((t) => Resposta(t, _responder)).toList();
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -28,19 +57,8 @@ class PerguntaAppState extends State<PerguntaApp>{
           children: [
             Column(
               children: [
-                Text(perguntas.elementAt(perguntaSelecionada)),
-                TextButton(
-                    onPressed: responder,
-                    child: Text('Resposta 1')
-                ),
-                TextButton(
-                    onPressed: responder,
-                    child: Text('Resposta 2')
-                ),
-                TextButton(
-                    onPressed: responder,
-                    child: Text('Resposta 3')
-                )
+               Questao(perguntas[_perguntaSelecionada]['texto'].toString()),
+                ...respostas.map((t) => Resposta(t, _responder)).toList(),
               ],
             )
           ],
@@ -52,8 +70,8 @@ class PerguntaAppState extends State<PerguntaApp>{
 
 class PerguntaApp extends StatefulWidget{
 
-  PerguntaAppState createState(){
-    return PerguntaAppState();
+  _PerguntaAppState createState(){
+    return _PerguntaAppState();
   }
 
 }
