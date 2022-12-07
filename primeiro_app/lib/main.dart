@@ -1,41 +1,75 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:primeiro_app/questionario.dart';
+import 'package:primeiro_app/resultado.dart';
 import './questao.dart';
 import './resposta.dart';
 
 main() => runApp(new PerguntaApp());
 
+
 class _PerguntaAppState extends State<PerguntaApp>{
+
+
+  var _pontuacaoTotal=0;
   var _perguntaSelecionada =0;
 
-  void _responder(){
-    setState(() {
-    _perguntaSelecionada++;
-    });
-    print(_perguntaSelecionada);
+  bool get temPerguntaSelecionada{
+    return _perguntaSelecionada< _perguntas.length;
   }
+
+  void _responder(int pontuacao){
+    if(temPerguntaSelecionada){
+      setState(() {
+        _perguntaSelecionada++;
+        _pontuacaoTotal+=pontuacao;
+      });
+    }
+  }
+
+  void _reiniciarQuestionario(){
+    setState(() {
+      _perguntaSelecionada =0;
+      _pontuacaoTotal =0;
+    });
+}
 
   ///String e objeto porque a resposta vai ser uma lista de respostas
   //final List <Map<String,Object>>perguntas=[
-    final perguntas =[ //Usando inferencia - Os dois métodos funcionam
+    final _perguntas = const [ //Usando inferencia - Os dois métodos funcionam
     {
       'texto':'Qual é o sua cor favorita?',
-      'respostas':['Preto','vermelho','Verde','Branco'],
+      'respostas':[
+        {'texto':'Preto','pontuacao':10 },
+        {'texto':'vermelho','pontuacao':5},
+        {'texto':'Verde','pontuacao':3},
+        {'texto':'Branco','pontuacao':1}
+      ],
     },
     {
       'texto':'Qual é o seu animal favorito?',
-      'respostas':['Coelho','Cobra','Elefante','Leão'],
+      'respostas':[
+        {'texto':'Coelho','pontuacao':10 },
+        {'texto':'Cobra','pontuacao':5},
+        {'texto':'Elefante','pontuacao':3},
+        {'texto':'Leão','pontuacao':1}
+        ],
     },
     {
       'texto':'Qual é o seu instrutor favorito??',
-      'respostas':['Maria','João','Léo','Pedro'],
+      'respostas':[
+        {'texto':'Leo','pontuacao':10 },
+        {'texto':'Maria','pontuacao':5},
+        {'texto':'João','pontuacao':3},
+        {'texto':'Pedro','pontuacao':1}
+        ],
     }
   ];
 
-  Widget build(BuildContext context){
 
-    List<String> respostas = perguntas[_perguntaSelecionada].cast()['respostas'];
+
+  Widget build(BuildContext context){
 
     //Código Imperativo
       /*
@@ -53,16 +87,11 @@ class _PerguntaAppState extends State<PerguntaApp>{
         appBar: AppBar(
           title: Text("Perguntas"),
         ),
-        body: Column(
-          children: [
-            Column(
-              children: [
-               Questao(perguntas[_perguntaSelecionada]['texto'].toString()),
-                ...respostas.map((t) => Resposta(t, _responder)).toList(),
-              ],
-            )
-          ],
-        ),
+        body: temPerguntaSelecionada
+            ? Questionario(perguntas: _perguntas,
+              perguntaSelecionada: _perguntaSelecionada,
+              quandoResponder: _responder)
+            : Resultado(_pontuacaoTotal,_reiniciarQuestionario),
       ),
     );
   }
